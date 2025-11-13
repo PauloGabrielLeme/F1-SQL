@@ -2,18 +2,17 @@ CREATE SCHEMA IF NOT EXISTS projeto_f1;
 
 DROP TABLE IF EXISTS projeto_f1.equipes CASCADE;
 CREATE TABLE projeto_f1.equipes(
-  id_equipe SERIAL  PRIMARY KEY,
+  id_equipe INT  PRIMARY KEY,
   nome_equipe VARCHAR(100) NOT NULL UNIQUE,
   pais_sede_equipe VARCHAR(100),
   dia_fundacao_equipe INT,
   mes_fundacao_equipe INT, 
   ano_fundacao_equipe INT
 );
-ALTER SEQUENCE projeto_f1.equipes_id_equipe_seq RESTART WITH 1;
 
 DROP TABLE IF EXISTS projeto_f1.funcionarios CASCADE;
 CREATE TABLE projeto_f1.funcionarios(
-  id_funcionario SERIAL  PRIMARY KEY,
+  id_funcionario INT  PRIMARY KEY,
   nome_funcionario VARCHAR(100) NOT NULL,
   sobrenome_funcionario VARCHAR(100) NOT NULL,
   email_funcionario VARCHAR(100) UNIQUE,
@@ -26,16 +25,17 @@ CREATE TABLE projeto_f1.funcionarios(
   mes_nascimento_funcionario INT,
   ano_nascimento_funcionario INT,
   equipe_id INT,
+  CONSTRAINT ck_salario_funcionario CHECK (salario_funcionario > 0),
+  CONSTRAINT ck_dia_nascimento CHECK (dia_nascimento_funcionario > 0 AND dia_nascimento_funcionario < 32),
+  CONSTRAINT ck_mes_nascimento CHECK (mes_nascimento_funcionario > 0 AND mes_nascimento_funcionario < 13),
   CONSTRAINT fk_equipe_id FOREIGN KEY (equipe_id) REFERENCES projeto_f1.equipes(id_equipe)
 );
-ALTER SEQUENCE projeto_f1.funcionarios_id_funcionario_seq RESTART WITH 1;
 
 DROP TABLE IF EXISTS projeto_f1.patrocinadores CASCADE;
 CREATE TABLE projeto_f1.patrocinadores(
-  id_patrocinador SERIAL PRIMARY KEY,
+  id_patrocinador INT PRIMARY KEY,
   nome_patrocinador VARCHAR(100) NOT NULL
 );
-ALTER SEQUENCE projeto_f1.patrocinadores_id_patrocinador_seq RESTART WITH 1;
 
 DROP TABLE IF EXISTS projeto_f1.equipes_patrocinadores CASCADE;
 CREATE TABLE projeto_f1.equipes_patrocinadores(
@@ -45,6 +45,7 @@ CREATE TABLE projeto_f1.equipes_patrocinadores(
   duracao_mes_patrocinio INT NOT NULL,
   tipo_patrocinio VARCHAR(100),
   PRIMARY KEY (equipe_id, patrocinador_id),
+  CONSTRAINT ck_valor_patrocinio CHECK (valor_patrocinio > 0),
   CONSTRAINT fk_equipe_id FOREIGN KEY (equipe_id) REFERENCES projeto_f1.equipes(id_equipe),
   CONSTRAINT fk_patrocinador_id FOREIGN KEY (patrocinador_id) REFERENCES projeto_f1.patrocinadores(id_patrocinador)
 );
@@ -58,19 +59,18 @@ CREATE TABLE projeto_f1.telefones(
 
 DROP TABLE IF EXISTS projeto_f1.corridas CASCADE;
 CREATE TABLE projeto_f1.corridas(
-  id_corrida SERIAL  PRIMARY KEY,
+  id_corrida INT  PRIMARY KEY,
   localizacao_cidade_corrida VARCHAR(100),
   temporada_corrida VARCHAR(100)
 );
-ALTER SEQUENCE projeto_f1.corridas_id_corrida_seq RESTART WITH 1;
 
 DROP TABLE IF EXISTS projeto_f1.fabricantes CASCADE;
 CREATE TABLE projeto_f1.fabricantes(
-  id_fabricante SERIAL  PRIMARY KEY,
+  id_fabricante INT  PRIMARY KEY,
   nome_fabricante VARCHAR(100) NOT NULL UNIQUE,
-  custo_temporada_fabricante INT
+  custo_temporada_fabricante INT,
+  CONSTRAINT ck_custo_temporada CHECK (custo_temporada_fabricante > 0)
 );
-ALTER SEQUENCE projeto_f1.fabricantes_id_fabricante_seq RESTART WITH 1;
 
 DROP TABLE IF EXISTS projeto_f1.equipes_associadas CASCADE;
 CREATE TABLE projeto_f1.equipes_associadas(
@@ -83,12 +83,11 @@ CREATE TABLE projeto_f1.equipes_associadas(
 
 DROP TABLE IF EXISTS projeto_f1.pecas CASCADE;
 CREATE TABLE projeto_f1.pecas(
-  id_peca SERIAL  PRIMARY KEY,
+  id_peca INT  PRIMARY KEY,
   nome_peca VARCHAR(200) NOT NULL,
   fabricante_id INT,
   CONSTRAINT fk_fabricante_id FOREIGN KEY (fabricante_id) REFERENCES projeto_f1.fabricantes(id_fabricante)
 );
-ALTER SEQUENCE projeto_f1.pecas_id_peca_seq RESTART WITH 1;
 
 DROP TABLE IF EXISTS projeto_f1.chefes_equipes CASCADE;
 CREATE TABLE projeto_f1.chefes_equipes(
@@ -102,20 +101,19 @@ DROP TABLE IF EXISTS projeto_f1.pilotos CASCADE;
 CREATE TABLE projeto_f1.pilotos(
   funcionario_id INT PRIMARY KEY, 
   tipo_piloto VARCHAR(100),
-  historico_pontos_piloto INT,
+  historico_pontos_piloto INT NOT NULL,
   CONSTRAINT fk_funcionario_id FOREIGN KEY (funcionario_id) REFERENCES projeto_f1.funcionarios(id_funcionario)
 );
 
 DROP TABLE IF EXISTS projeto_f1.carros CASCADE;
 CREATE TABLE projeto_f1.carros(
-  id_carro SERIAL  PRIMARY KEY,
+  id_carro INT  PRIMARY KEY,
   cor_carro VARCHAR(100),
   chassi_carro VARCHAR(100) UNIQUE,
   ano_carro INT,
   funcionario_id INT, 
   CONSTRAINT fk_funcionario_id FOREIGN KEY (funcionario_id) REFERENCES projeto_f1.pilotos(funcionario_id)
 );
-ALTER SEQUENCE projeto_f1.carros_id_carro_seq RESTART WITH 1;
 
 DROP TABLE IF EXISTS projeto_f1.departamentos_medicos CASCADE;
 CREATE TABLE projeto_f1.departamentos_medicos(
@@ -135,7 +133,7 @@ CREATE TABLE projeto_f1.certificacoes(
 DROP TABLE IF EXISTS projeto_f1.mecanicos CASCADE;
 CREATE TABLE projeto_f1.mecanicos(
   funcionario_id INT PRIMARY KEY,
-  id_crea_mecanico VARCHAR(100),
+  id_crea_mecanico VARCHAR(100) NOT NULL,
   nivel_experiencia_mecanico VARCHAR(100),
   CONSTRAINT fk_funcionario_id FOREIGN KEY (funcionario_id) REFERENCES projeto_f1.funcionarios(id_funcionario)
 );
