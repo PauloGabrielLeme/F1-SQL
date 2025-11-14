@@ -24,6 +24,6 @@ WHERE mp.peca_id IN (
   SELECT p.id_peca
   FROM projeto_f1.pecas AS p
   INNER JOIN projeto_f1.fabricantes AS fb ON p.fabricante_id = fb.id_fabricante
-  WHERE fb.custo_temporada_fabricante < 5000000
+  WHERE fb.custo_temporada_fabricante >= 5000000
 )
 GROUP BY e.nome_equipe, f.nome_funcionario, f.sobrenome_funcionario, m.nivel_experiencia_mecanico;
