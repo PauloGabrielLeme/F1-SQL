@@ -14,7 +14,7 @@ INNER JOIN projeto_f1.equipes AS e ON f.equipe_id = e.id_equipe
 GROUP BY e.nome_equipe, f.nome_funcionario, f.sobrenome_funcionario;
 
 
--- Terceira consulta: Quais as equipes e seus mecânicos que utilizam peças fornecidas por fabricantes com custo por temporado menor que 5 milhôes
+-- Terceira consulta: Quais as equipes e seus mecânicos que utilizam peças fornecidas por fabricantes com custo por temporado maior ou igual a 5 milhôes
 SELECT  e.nome_equipe, f.nome_funcionario, f.sobrenome_funcionario, m.nivel_experiencia_mecanico
 FROM projeto_f1.mecanicos_pecas AS mp
 INNER JOIN projeto_f1.funcionarios AS f ON mp.funcionario_id = f.id_funcionario
